@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import unknownWorldsData from '../../api/unknownWorlds.json'
+import { getContentLabel } from '~/data/labels'
 import type { ContentSection } from '~/types/content'
 import { getWorldCards, worlds } from '~/utils/content'
 
@@ -62,7 +63,9 @@ const activeCard = computed(() => {
 const accessTitle = computed(() => {
   const world = selectedWorld.value
   if (!world) return ''
-  return `${world.name} / ${selectedSection.value} / ${activeCard.value?.id || world.name}`
+  const card = activeCard.value
+  const cardLabel = card ? getContentLabel(card.section, card.id) : world.name
+  return `${world.name} / ${selectedSection.value} / ${cardLabel}`
 })
 
 function pickSection(section: ContentSection) {
@@ -396,7 +399,7 @@ onBeforeUnmount(() => {
                 :style="{ '--i': index, '--n': Math.max(sectionCards.length, 1) }"
                 @click="pickCard(card.id, card.section)"
               >
-                {{ card.id }}
+                {{ getContentLabel(card.section, card.id) }}
               </button>
               <p v-if="!sectionCards.length" class="ray-home__compass-empty">NO DATA</p>
             </div>

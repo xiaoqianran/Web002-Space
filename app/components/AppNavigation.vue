@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { getContentLabel, getMenuPath } from '~/data/labels'
 import type { ContentSection } from '~/types/content'
 import {
   contentRouter,
-  getRecord,
   getWorldCategoryTarget,
   introductions,
   worlds,
@@ -12,58 +12,56 @@ const route = useRoute()
 const isOpen = ref(false)
 const assetUrl = useAssetUrl()
 const worldIds = Object.keys(worlds)
-const activeWorldId = ref(worldIds[0] || 'cosmic-broth')
 
-const sections: Array<{ id: ContentSection, label: string }> = [
-  { id: 'records', label: 'records' },
-  { id: 'portraits', label: 'portraits' },
-  { id: 'images', label: 'images' },
-]
+const currentWorldFromRoute = computed(() => {
+  const segment = String(route.params.world || '')
+  return worldIds.includes(segment) ? segment : worldIds[0] || 'cosmic-broth'
+})
 
-const imageTitles: Record<string, string> = {
-  vlog: 'Travel log',
-  maps: 'Atlas',
-  darkroom: 'darkroom',
-  chessboard: 'chessboard',
-}
+const activeWorldId = ref(currentWorldFromRoute.value)
+
+const sections: ContentSection[] = ['records', 'portraits', 'images']
 
 const activeWorld = computed(() => worlds[activeWorldId.value] || null)
 
 const activeEntries = computed(() => {
   const worldId = activeWorldId.value
   const worldIntro = introductions[worldId]
-  if (!worldIntro) return [] as Array<{ section: ContentSection, id: string, label: string, target: string }>
+  if (!worldIntro) {
+    return [] as Array<{ section: ContentSection, id: string, label: string, target: string }>
+  }
 
   return sections.flatMap((section) => {
-    const bucket = worldIntro[section.id] || {}
+    const bucket = worldIntro[section] || {}
     return Object.keys(bucket).map((id) => {
-      const target = section.id === 'records'
+      const target = section === 'records'
         ? (() => {
             const chapter = contentRouter[worldId]?.records[id]?.[0]
             return chapter ? `/${worldId}/records/${id}/${chapter}` : `/${worldId}/records/${id}`
           })()
-        : `/${worldId}/${section.id}/${id}`
+        : `/${worldId}/${section}/${id}`
 
-      const label = section.id === 'records'
-        ? (getRecord(id)?.name || id)
-        : section.id === 'images'
-          ? (imageTitles[id] || id)
-          : id
-
-      return { section: section.id, id, label, target }
+      return {
+        section,
+        id,
+        label: getContentLabel(section, id),
+        target,
+      }
     })
   })
 })
 
-const pathLabel = computed(() => `c:\\${activeWorldId.value}\\database`)
+const pathLabel = computed(() => getMenuPath(activeWorldId.value))
 
 watch(() => route.path, () => {
   isOpen.value = false
+  activeWorldId.value = currentWorldFromRoute.value
 })
 
 watch(isOpen, (open) => {
   if (typeof document === 'undefined') return
   document.documentElement.style.overflow = open ? 'hidden' : ''
+  if (open) activeWorldId.value = currentWorldFromRoute.value
 })
 
 onBeforeUnmount(() => {
@@ -123,7 +121,7 @@ function selectWorld(worldId: string) {
           <i /><i /><i />
         </div>
 
-        <aside class="menubox__worldview" v-if="activeWorld">
+        <aside v-if="activeWorld" class="menubox__worldview">
           <p class="menubox__eyebrow">■ [缩略浏览]::check()</p>
           <div class="menubox__preview">
             <header>

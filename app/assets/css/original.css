@@ -953,23 +953,94 @@
 .ray-home__instruction-panel b { color: var(--ray-white); }
 
 .system-enter-active,
-.system-leave-active { transition: opacity 0.35s ease; }
+.system-leave-active { transition: opacity 0.4s ease; }
 .system-enter-from,
 .system-leave-to { opacity: 0; }
-.system-enter-active .ray-home__databox,
-.system-enter-active .ray-home__pagebox {
-  animation: system-rise 0.45s cubic-bezier(0.2, 0.9, 0.45, 1) both;
-}
-.system-enter-active .ray-home__pagebox { animation-delay: 0.08s; }
 
-@keyframes system-rise {
+.system-enter-active .ray-home__system-backdrop {
+  animation: system-fade 0.45s ease both;
+}
+
+.system-enter-active .ray-home__databox {
+  animation: system-databox-in 0.7s cubic-bezier(0.2, 0.9, 0.45, 1) both;
+}
+
+.system-enter-active .ray-home__pagebox {
+  animation: system-pagebox-in 0.85s cubic-bezier(0.2, 0.9, 0.45, 1) 0.08s both;
+}
+
+.system-enter-active .ray-home__system-close {
+  animation: system-fade 0.5s ease 0.25s both;
+}
+
+.system-enter-active .ray-home__databox-image img {
+  animation: system-image-in 0.75s cubic-bezier(0.2, 0.9, 0.45, 1) 0.12s both;
+}
+
+.system-enter-active .ray-home__access-btn {
+  animation: system-fade 0.45s ease 0.35s both;
+}
+
+.system-enter-active .ray-home__compass-node,
+.system-enter-active .ray-home__compass-id {
+  animation: system-node-in 0.55s cubic-bezier(0.2, 0.9, 0.45, 1) both;
+}
+
+.system-enter-active .ray-home__compass-node:nth-child(1) { animation-delay: 0.18s; }
+.system-enter-active .ray-home__compass-node:nth-child(2) { animation-delay: 0.26s; }
+.system-enter-active .ray-home__compass-node:nth-child(3) { animation-delay: 0.34s; }
+.system-enter-active .ray-home__compass-id:nth-child(1) { animation-delay: 0.28s; }
+.system-enter-active .ray-home__compass-id:nth-child(2) { animation-delay: 0.36s; }
+.system-enter-active .ray-home__compass-id:nth-child(3) { animation-delay: 0.44s; }
+
+@keyframes system-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes system-databox-in {
   from {
     opacity: 0;
-    transform: translateY(18px) scale(0.96);
+    transform: translateX(-28px) scale(0.96);
   }
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes system-pagebox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.72) rotate(-12deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes system-image-in {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+    filter: grayscale(1) brightness(1.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: grayscale(0.15) contrast(1.05);
+  }
+}
+
+@keyframes system-node-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: none;
   }
 }
 
@@ -1453,6 +1524,9 @@
   .ray-home__system { padding: 0 4vw; gap: 1.5rem; }
   .ray-home__databox { width: min(22rem, 44vw); min-height: 24rem; }
   .ray-home__pagebox { width: min(28rem, 48vw); }
+  .menubox { gap: 1rem; padding-inline: 2vw; }
+  .menubox__worldview { width: min(16rem, 32vw); }
+  .menubox__selector { width: min(26rem, 50vw); }
   .record-console { width: min(92vw, 920px); }
   .record-console__middle { grid-template-columns: 1.1fr 1fr; }
   .record-chapters { position: absolute; top: 220px; right: 3vw; }
@@ -1480,7 +1554,33 @@
   .menubox__edge { display: none; }
   .menubox__worldview,
   .menubox__selector { width: 100%; min-height: 0; }
-  .menubox__columns { grid-template-columns: 1fr; min-height: 0; }
+  .menubox__columns {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    min-height: 0;
+  }
+  .menubox__worlds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+  }
+  .menubox__entries {
+    max-height: none;
+    padding: 0.8rem 0 0;
+    border-top: 1px solid rgb(255 255 255 / 18%);
+  }
+  .ray-home__system {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  .ray-home__pagebox {
+    width: min(100%, 20rem);
+    margin: 0 auto 5rem;
+  }
+  .ray-home__compass-node,
+  .ray-home__compass-id {
+    font-size: 0.72rem;
+  }
   .ray-home__status { bottom: 13%; left: 1rem; transform: scale(.75); transform-origin: left bottom; }
   .ray-home__clock { bottom: 4%; left: 1rem; }
   .ray-home__console { right: -100px; bottom: -80px; left: auto; width: 230px; transform: none; }
