@@ -2,6 +2,28 @@
 
 基于 Nuxt 4 的 COSMIC BROTH 世界观资料库复刻。记录、人物肖像、图像档案和公开 API 快照均由仓库内数据生成，并支持服务端渲染与 GitHub Pages 静态部署。
 
+## 分支约定
+
+```text
+本地开发 / 功能提交
+        ↓
+   push 到 dev（日常集成）
+        ↓
+   PR：dev → main（发布）
+```
+
+- **`dev`**：日常开发与集成分支，改动先到这里。
+- **`main`**：发布分支，**只接受来自 `dev` 的 PR**（由 CI 工作流 `Branch policy` 强制）。
+- 不要把功能分支直接 PR 进 `main`。
+
+发布示例：
+
+```powershell
+git checkout dev
+git push origin dev
+gh pr create --base main --head dev --title "release: sync dev to main"
+```
+
 ## 环境
 
 - Node.js 22.12 或更高版本
@@ -15,7 +37,6 @@ npm run dev
 ```
 
 默认访问 `http://localhost:3000`。
-
 ## 质量检查
 
 ```powershell

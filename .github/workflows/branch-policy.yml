@@ -1,0 +1,25 @@
+name: Branch policy
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  require-dev-head:
+    name: Require PR from dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only allow PRs whose head branch is dev
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          if [ "$HEAD_REF" != "dev" ]; then
+            echo "::error::PRs into main must come from the 'dev' branch (got head='$HEAD_REF')."
+            echo "Correct flow: feature work → push/merge into dev → open PR dev → main."
+            exit 1
+          fi
+          echo "OK: pull request head is dev."
