@@ -1,0 +1,1 @@
+div[data-v-86db70d3]{--color:inherit;animation:charge-86db70d3 calc(var(--l)*.125s) var(--ease_inout) infinite;animation-delay:calc(var(--i)*.1s);background-color:var(--color);height:calc(var(--scale)*1rem);margin:0 calc(var(--scale)*.1rem);position:relative;width:calc(var(--border_xs)*var(--s))}@keyframes charge-86db70d3{0%{opacity:0}50%{opacity:1}to{opacity:0}}
