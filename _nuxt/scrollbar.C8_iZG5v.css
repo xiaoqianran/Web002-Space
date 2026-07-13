@@ -1,0 +1,1 @@
+#background[data-v-7e17aca5]{height:100vh;left:0;position:fixed;top:0;width:100%}.scrollbar[data-v-da2a44f3]{--scale:1;height:100dvh;left:0;overflow:hidden;position:fixed;width:calc(var(--scale)*.1rem);z-index:10000}.scrollbar[data-v-da2a44f3]:before{background-color:var(--color_theme);content:"";height:100%;transform:translateY(calc((1 - var(--p))*-100%));width:100%}
