@@ -68,6 +68,12 @@ img {
   overflow: clip;
 }
 
+/* Home is a fixed HUD stage; prevent page scroll under the star map. */
+.app-shell:has([data-content-page="home"]) {
+  height: 100svh;
+  overflow: hidden;
+}
+
 .eyebrow {
   margin: 0 0 1rem;
   color: var(--world-color, var(--cyan));
