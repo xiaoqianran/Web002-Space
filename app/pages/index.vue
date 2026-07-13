@@ -295,15 +295,34 @@ onBeforeUnmount(() => {
       <div class="ray-home__orbit ray-home__orbit--left"><span>[ The Torch's Flicker ]</span></div>
       <div class="ray-home__orbit ray-home__orbit--right" />
 
-      <div class="ray-home__drag ray-home__drag--left">
-        <b>▲</b>
-        DRAG
-        <b>▲</b>
+      <div class="ray-home__drag ray-home__drag--left" aria-hidden="true">
+        <p class="ray-home__drag-text">DRAG</p>
+        <i class="ray-home__drag-arrow" />
+        <i class="ray-home__drag-arrow" />
+        <svg class="ray-home__drag-line" viewBox="0 0 110 670" fill="none">
+          <polyline points="5.3,4.9 24.7,46.9 45,51.4 59.2,81.9 53.7,109.7 62.5,128.7 71,132.5 77.6,159.1" stroke="currentColor" stroke-width="2" />
+          <polyline points="5.3,665.1 24.7,623.1 45,618.6 59.2,588.1 53.7,560.3 62.5,541.3 71,537.5 77.6,510.9" stroke="currentColor" stroke-width="2" />
+          <path d="M83.2,182.7c14,48.4,21.5,99.5,21.5,152.3c0,52.8-7.5,103.9-21.4,152.3" stroke="currentColor" stroke-width="2" stroke-dasharray="0 40" stroke-linecap="round" />
+          <path d="M83.2,182.7c14,48.4,21.5,99.5,21.5,152.3c0,52.8-7.5,103.9-21.4,152.3" stroke="currentColor" stroke-width="8" stroke-dasharray="1 39" stroke-dashoffset="20" stroke-linecap="round" />
+        </svg>
       </div>
-      <div class="ray-home__drag ray-home__drag--right">
-        <b>▼</b>
-        DRAG
-        <b>▼</b>
+      <div class="ray-home__drag ray-home__drag--right" aria-hidden="true">
+        <p class="ray-home__drag-text">DRAG</p>
+        <i class="ray-home__drag-arrow" />
+        <i class="ray-home__drag-arrow" />
+        <svg class="ray-home__drag-line" viewBox="0 0 110 670" fill="none">
+          <polyline points="5.3,4.9 24.7,46.9 45,51.4 59.2,81.9 53.7,109.7 62.5,128.7 71,132.5 77.6,159.1" stroke="currentColor" stroke-width="2" />
+          <polyline points="5.3,665.1 24.7,623.1 45,618.6 59.2,588.1 53.7,560.3 62.5,541.3 71,537.5 77.6,510.9" stroke="currentColor" stroke-width="2" />
+          <path d="M83.2,182.7c14,48.4,21.5,99.5,21.5,152.3c0,52.8-7.5,103.9-21.4,152.3" stroke="currentColor" stroke-width="2" stroke-dasharray="0 40" stroke-linecap="round" />
+          <path d="M83.2,182.7c14,48.4,21.5,99.5,21.5,152.3c0,52.8-7.5,103.9-21.4,152.3" stroke="currentColor" stroke-width="8" stroke-dasharray="1 39" stroke-dashoffset="20" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="ray-home__drag ray-home__drag--top" aria-hidden="true">
+        <svg class="ray-home__drag-line ray-home__drag-line--top" viewBox="0 0 800 60" fill="none">
+          <polyline points="167.76,31.7 126.41,37.47 114.62,31.75 92.66,34.94 87.37,43.28 30.33,51.69 11.43,46.86" stroke="currentColor" stroke-width="2" />
+          <polyline points="632.24,31.7 673.59,37.47 685.38,31.75 707.34,34.94 712.63,43.28 769.67,51.69 788.57,46.86" stroke="currentColor" stroke-width="2" />
+          <path d="M190 30 H610" stroke="currentColor" stroke-width="2" stroke-dasharray="1 18" stroke-linecap="round" />
+        </svg>
       </div>
 
       <!-- Bottom HUD aligned to original uibox layout -->
@@ -479,16 +498,17 @@ onBeforeUnmount(() => {
         aria-label="操作说明"
       >
         <button type="button" class="ray-home__instruction-backdrop" aria-label="关闭说明" @click="closeInstruction" />
-        <div class="ray-home__instruction-panel">
-          <p class="ray-home__instruction-title">OPERATING INSTRUCTIONS</p>
-          <ul>
-            <li><b>DRAG</b> 拖拽星图背景，浏览更广阔的航行视野。</li>
-            <li><b>CLICK</b> 点击星球节点，打开对应世界观资料系统。</li>
-            <li><b>ACCESS</b> 在系统层选择 records / portraits / images 后进入档案。</li>
-            <li><b>CONSLOE</b> 关闭系统层，回到航行监测界面。</li>
-          </ul>
-          <button type="button" class="ray-home__system-close" @click="closeInstruction">[返回]::close()</button>
+        <div class="ray-home__instruction-main">
+          <img
+            class="ray-home__instruction-guide"
+            :src="assetUrl('/assets/hud/guide.png')"
+            alt="OPERATING INSTRUCTIONS"
+          >
+          <div class="ray-home__instruction-frame" aria-hidden="true" />
         </div>
+        <button type="button" class="ray-home__instruction-return" @click="closeInstruction">
+          [返回]::close()
+        </button>
       </div>
     </Transition>
   </main>
