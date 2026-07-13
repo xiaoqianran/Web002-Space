@@ -46,6 +46,21 @@ jobs:
             echo "No api directory yet; skip JSON checks"
           fi
 
+      - name: Build GitHub Pages artifact
+        env:
+          PAGES_BASE_PATH: /Web002-Space
+        run: npm run build:pages
+
+      - name: Validate GitHub Pages artifact
+        run: |
+          set -euo pipefail
+          test -f .pages/.nojekyll
+          test -f .pages/api/router.json
+          test -f .pages/cosmic-broth/records/index.html
+          test -f .pages/cosmic-broth/records/yuzhoutang/c1/index.html
+          grep -q '/Web002-Space/_nuxt/' .pages/index.html
+          grep -q '/Web002-Space/api' .pages/index.html
+
       - name: Smoke-test local HTTP server
         run: |
           set -euo pipefail
