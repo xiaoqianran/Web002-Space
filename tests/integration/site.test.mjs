@@ -111,5 +111,7 @@ test('renders all reported deep entry routes', async () => {
 test('returns the Nuxt error page for an unknown archive node', async () => {
   const response = await fetchHtml('/unknown/records/missing/c1')
   assert.equal(response.status, 404)
-  assert.match(await response.text(), /SIGNAL LOST/)
+  const html = await response.text()
+  assert.match(html, /SIGNAL LOST/)
+  assert.match(html, /ray-error|RETURN|返回/)
 })

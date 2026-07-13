@@ -423,14 +423,24 @@
   border: 1px solid rgb(255 255 255 / 28%);
   border-radius: 50%;
   pointer-events: none;
+  animation: orbit-spin 90s linear infinite;
+}
+
+.ray-home__orbit::before,
+.ray-home__orbit::after {
+  position: absolute;
+  border-radius: inherit;
+  content: "";
+}
+
+.ray-home__orbit::before {
+  inset: 4%;
+  border: 1px dotted rgb(255 255 255 / 10%);
 }
 
 .ray-home__orbit::after {
-  position: absolute;
-  inset: 8%;
-  content: "";
+  inset: 10%;
   border: 1px dashed rgb(255 255 255 / 12%);
-  border-radius: inherit;
 }
 
 .ray-home__orbit--left { top: 8%; left: 20%; }
@@ -440,8 +450,19 @@
   right: -3%;
   color: rgb(255 255 255 / 42%);
   font-size: 0.58rem;
+  animation: orbit-spin 90s linear infinite reverse;
 }
-.ray-home__orbit--right { top: -24%; right: 11%; width: 18vw; }
+.ray-home__orbit--right {
+  top: -24%;
+  right: 11%;
+  width: 18vw;
+  animation-duration: 120s;
+  animation-direction: reverse;
+}
+
+@keyframes orbit-spin {
+  to { transform: rotate(1turn); }
+}
 
 .ray-home__drag {
   position: absolute;
@@ -1751,6 +1772,67 @@
 .guide-leave-to {
   opacity: 0;
   transform: translate(-50%, -46%) scale(0.96);
+}
+
+/* ---- error page ---- */
+.ray-error {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 6rem 1.5rem;
+}
+
+.ray-error__panel {
+  width: min(36rem, 100%);
+  padding: 2rem 1.6rem 1.8rem;
+  border: 1px solid rgb(255 255 255 / 45%);
+  background: rgb(3 8 24 / 88%);
+  text-align: left;
+}
+
+.ray-error__code {
+  margin: 0 0 1rem;
+  color: var(--ray-blue);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+}
+
+.ray-error h1 {
+  margin: 0;
+  color: var(--ray-white);
+  font-size: clamp(4rem, 16vw, 8rem);
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+.ray-error__msg {
+  margin: 1.2rem 0 1rem;
+  color: #d7dee9;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.ray-error__dump {
+  margin: 0 0 1.5rem;
+  color: rgb(255 255 255 / 55%);
+  font-size: 0.68rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.ray-error__btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ray-blue);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.ray-error__btn:hover {
+  color: var(--ray-white);
 }
 
 @media (max-width: 1000px) {
