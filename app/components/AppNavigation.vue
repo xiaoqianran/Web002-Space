@@ -17,7 +17,7 @@ watch(() => route.path, () => {
 </script>
 
 <template>
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--home': route.path === '/' }">
     <NuxtLink class="brand" to="/" aria-label="返回首页">
       <span class="brand-mark" aria-hidden="true"><i /></span>
       <span>

@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-07-13',
   devtools: { enabled: false },
   modules: ['@nuxt/eslint'],
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/original.css'],
   app: {
     baseURL,
     head: {
