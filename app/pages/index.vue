@@ -40,6 +40,19 @@ const drag = reactive({
 
 const sections: ContentSection[] = ['records', 'portraits', 'images']
 
+const shipMeters = [
+  { key: 'EN', level: 0.8 },
+  { key: 'HI', level: 0.5 },
+  { key: 'PSI', level: 0.3 },
+  { key: 'CQL', level: 0.5 },
+] as const
+
+const socialLinks = [
+  { href: 'https://b23.tv/0kFykcQ', label: 'Bilibili', icon: 'bili' },
+  { href: 'https://weibo.com/u/5652161753', label: 'Weibo', icon: 'weibo' },
+  { href: 'https://changdunovel.com/wap/share-v2.html?&book_id=7522080164855942206', label: '长读小说', icon: 'book' },
+] as const
+
 const selectedWorld = computed(() =>
   selectedWorldId.value ? worlds[selectedWorldId.value] ?? null : null,
 )
@@ -293,44 +306,88 @@ onBeforeUnmount(() => {
         <b>▼</b>
       </div>
 
-      <div class="ray-home__status">
-        <div class="ray-home__brain" aria-hidden="true"><i /></div>
-        <dl>
-          <div><dt>EN</dt><dd><i style="width: 72%" /></dd></div>
-          <div><dt>HI</dt><dd><i style="width: 51%" /></dd></div>
-          <div><dt>PSI</dt><dd><i style="width: 28%" /></dd></div>
-          <div><dt>CQL</dt><dd><i style="width: 63%" /></dd></div>
-        </dl>
+      <!-- Bottom HUD aligned to original uibox layout -->
+      <div class="ray-uibox" aria-label="舰载状态与控制台">
+        <section class="ray-uibox__ship">
+          <div class="ray-uibox__ship-info">
+            <div class="ray-uibox__ship-icon" aria-hidden="true">
+              <svg viewBox="0 0 500 500" class="ray-uibox__ship-svg">
+                <circle cx="250" cy="250" r="210" fill="none" stroke="currentColor" stroke-width="8" />
+                <circle cx="250" cy="250" r="108" fill="none" stroke="currentColor" stroke-width="8" />
+                <path d="M250 70 L290 190 L420 190 L315 270 L355 400 L250 320 L145 400 L185 270 L80 190 L210 190 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="round" />
+                <circle cx="250" cy="250" r="28" fill="currentColor" />
+              </svg>
+            </div>
+            <div class="ray-uibox__meters">
+              <div v-for="meter in shipMeters" :key="meter.key" class="ray-uibox__meter">
+                <span>{{ meter.key }}</span>
+                <i :style="{ '--l': meter.level }" />
+              </div>
+            </div>
+          </div>
+          <div class="ray-uibox__blocks" aria-hidden="true">
+            <span /><span /><span />
+          </div>
+        </section>
+
+        <section class="ray-uibox__middle">
+          <div class="ray-uibox__time">
+            <p class="ray-uibox__time-tip">
+              <i aria-hidden="true" />
+              <span><em>宇宙汤:</em> {{ dateText }}</span>
+            </p>
+            <div class="ray-uibox__time-line" aria-hidden="true" />
+            <strong class="ray-uibox__clock">{{ clockText }}</strong>
+          </div>
+
+          <button class="ray-uibox__console" type="button" aria-label="控制台 CONSLOE" @click="closeSystem">
+            <div class="ray-uibox__console-border" aria-hidden="true" />
+            <img class="ray-uibox__console-web" :src="assetUrl('/assets/hud/web.svg')" alt="" aria-hidden="true">
+            <span class="ray-uibox__console-label">CONSLOE</span>
+            <i class="ray-uibox__console-dot ray-uibox__console-dot--a" /><i class="ray-uibox__console-dot ray-uibox__console-dot--b" /><i class="ray-uibox__console-dot ray-uibox__console-dot--c" />
+          </button>
+
+          <div class="ray-uibox__links">
+            <p class="ray-uibox__links-tip">
+              External Links
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h8v2H9.4L18 16.6 16.6 18 8 9.4V14H6V6z" fill="currentColor" /></svg>
+            </p>
+            <div class="ray-uibox__links-line" aria-hidden="true" />
+            <div class="ray-uibox__social">
+              <a
+                v-for="link in socialLinks"
+                :key="link.href"
+                class="ray-uibox__social-item"
+                :href="link.href"
+                target="_blank"
+                rel="noreferrer"
+                :aria-label="link.label"
+              >
+                <svg v-if="link.icon === 'bili'" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.5 7h15a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5v-9A1.5 1.5 0 0 1 4.5 7Zm3-3 2 2h5l2-2h1.5l-2.2 2.2A2 2 0 0 1 14.6 9H9.4a2 2 0 0 1-1.4-.6L5.8 4H7.5ZM8 11v4h1.5v-4H8Zm6.5 0v4H16v-4h-1.5Z" /></svg>
+                <svg v-else-if="link.icon === 'weibo'" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.8 8.6c3.2-.2 6.4 1.8 6.6 4.8.2 3.2-2.8 5.8-6.4 5.6C6.4 18.8 3.6 16 3.8 12.8c.2-2.8 2.8-4 6-4.2Zm-.2 8.2c2.2.2 4-.8 4-2.4s-1.8-2.8-4-3-4 .8-4 2.4 1.8 2.8 4 3Zm8.8-7.8c.8.2 1.4 1 1.2 1.8-.1.5-.5.9-1 1-.5.1-1-.2-1.2-.7-.2-.5 0-1.1.5-1.4.2-.1.3-.2.5-.2v-.5Zm1.8-1.6c1.4.5 2.3 1.8 2.1 3.3-.1.7-.6 1.3-1.2 1.6-.6.3-1.3.2-1.7-.3-.4-.5-.3-1.2.2-1.6.2-.2.4-.4.4-.7 0-.5-.4-1-1-1.1-.5-.1-.9.2-1.1.6-.3.6-1 .9-1.6.6-.6-.2-.9-1-.6-1.6.7-1.5 2.5-2.4 4.5-1.8Z" /></svg>
+                <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 3h9l3 3v15H6V3Zm8 1.5V7h2.5L14 4.5ZM8 10h8v1.5H8V10Zm0 3h8v1.5H8V13Zm0 3h5V17.5H8V16Z" /></svg>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="ray-uibox__help">
+          <button class="ray-uibox__help-btn" type="button" @click="openInstruction">
+            <span class="ray-uibox__help-icon" aria-hidden="true">
+              <i />
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M12 10.5v6M12 7.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+            </span>
+            <span class="ray-uibox__help-copy">
+              <strong>Need Help?</strong>
+              <small>Check Instruction</small>
+            </span>
+          </button>
+          <div class="ray-uibox__blocks" aria-hidden="true">
+            <span /><span /><span />
+          </div>
+        </section>
       </div>
 
-      <div class="ray-home__clock">
-        <p>◷ <em>宇宙汤:</em> {{ dateText }}</p>
-        <strong>{{ clockText }}</strong>
-      </div>
-
-      <button class="ray-home__console" type="button" aria-label="控制台" @click="closeSystem">
-        <span>CONSLOE</span>
-        <i /><b /><i />
-        <div class="ray-home__console-grid" aria-hidden="true" />
-      </button>
-
-      <div class="ray-home__external">External Links&nbsp; ↘</div>
-      <div class="ray-home__social">
-        <a href="https://space.bilibili.com/" target="_blank" rel="noreferrer" aria-label="Bilibili">▣</a>
-        <a href="https://weibo.com/" target="_blank" rel="noreferrer" aria-label="Weibo">◉</a>
-        <a href="https://fanqienovel.com/" target="_blank" rel="noreferrer" aria-label="番茄小说">▣</a>
-      </div>
-
-      <button class="ray-home__help" type="button" @click="openInstruction">
-        <span class="ray-home__help-icon" aria-hidden="true">◉</span>
-        <span>
-          <strong>Need Help?</strong>
-          <small>Check Instruction</small>
-        </span>
-      </button>
-
-      <div class="ray-home__corner ray-home__corner--left" aria-hidden="true" />
-      <div class="ray-home__corner ray-home__corner--right" aria-hidden="true" />
       <div class="ray-home__brackets" aria-hidden="true">
         <i /><i /><i /><i />
       </div>
