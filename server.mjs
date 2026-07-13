@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 4173);
+const router = JSON.parse(await readFile(join(root, "api", "router.json"), "utf8"));
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -55,6 +56,37 @@ async function serveClientApp(response, pathname) {
   response.end(html);
 }
 
+function getContentEntryRedirect(pathname) {
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+  const categoryMatch = normalizedPath.match(/^\/([^/]+)\/(records|portraits|images)$/);
+
+  if (categoryMatch) {
+    const [, world, category] = categoryMatch;
+    const entries = router[world]?.[category];
+    const firstId = category === "records"
+      ? Object.keys(entries || {})[0]
+      : entries?.[0];
+
+    if (!firstId) return null;
+
+    if (category === "records") {
+      const firstChapter = entries[firstId]?.[0];
+      return firstChapter ? `/${world}/${category}/${firstId}/${firstChapter}` : null;
+    }
+
+    return `/${world}/${category}/${firstId}`;
+  }
+
+  const recordMatch = normalizedPath.match(/^\/([^/]+)\/records\/([^/]+)$/);
+  if (recordMatch) {
+    const [, world, recordId] = recordMatch;
+    const firstChapter = router[world]?.records?.[recordId]?.[0];
+    return firstChapter ? `/${world}/records/${recordId}/${firstChapter}` : null;
+  }
+
+  return null;
+}
+
 createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host}`);
@@ -68,6 +100,16 @@ createServer(async (request, response) => {
         return;
       }
       await serveFile(response, apiFile);
+      return;
+    }
+
+    const contentEntryRedirect = getContentEntryRedirect(url.pathname);
+    if (contentEntryRedirect) {
+      response.writeHead(302, {
+        "Location": `${contentEntryRedirect}${url.search}`,
+        "Cache-Control": "no-cache"
+      });
+      response.end();
       return;
     }
 
