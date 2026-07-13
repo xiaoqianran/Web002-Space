@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Logs and local runtime
+*.log
+npm-debug.log*
+server.stdout.log
+server.stderr.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary diagnostics / screenshots from local verification
+reference-*.png
+reference-*.txt
+local-*.png
+local-*.txt
+
+# Environment
+.env
+.env.*
+!.env.example

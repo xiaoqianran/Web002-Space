@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: Syntax and integrity checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check server.mjs syntax
+        run: npm run check
+
+      - name: Check all Nuxt JS bundles
+        run: |
+          set -euo pipefail
+          if [ -d _nuxt ]; then
+            find _nuxt -name '*.js' -print0 | while IFS= read -r -d '' file; do
+              echo "node --check $file"
+              node --check "$file"
+            done
+          else
+            echo "No _nuxt directory yet; skip bundle checks"
+          fi
+
+      - name: Validate API JSON files
+        run: |
+          set -euo pipefail
+          if [ -d api ]; then
+            find api -name '*.json' -print0 | while IFS= read -r -d '' file; do
+              node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$file"
+            done
+            echo "All API JSON files are valid"
+          else
+            echo "No api directory yet; skip JSON checks"
+          fi
+
+      - name: Smoke-test local HTTP server
+        run: |
+          set -euo pipefail
+          if [ ! -f server.mjs ] || [ ! -f index.html ]; then
+            echo "App files not present yet; skip smoke test"
+            exit 0
+          fi
+          node server.mjs &
+          pid=$!
+          trap 'kill $pid 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:4173/" >/dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          curl -fsS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:4173/" | grep -q '^200$'
+          curl -fsS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:4173/api/router" | grep -q '^200$'
+          curl -fsS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:4173/cosmic-broth/records/yuzhoutang/c1" | grep -q '^200$'
+          echo "HTTP smoke checks passed"
