@@ -1,28 +1,94 @@
 <script setup lang="ts">
+import { getContentLabel, getMenuPath } from '~/data/labels'
 import type { ContentSection } from '~/types/content'
-import { contentRouter, getWorldCategoryTarget, worlds } from '~/utils/content'
+import {
+  contentRouter,
+  getWorldCategoryTarget,
+  introductions,
+  worlds,
+} from '~/utils/content'
 
 const route = useRoute()
 const isOpen = ref(false)
 const assetUrl = useAssetUrl()
-const sections: Array<{ id: ContentSection, label: string }> = [
-  { id: 'records', label: 'RECORDS' },
-  { id: 'portraits', label: 'PORTRAITS' },
-  { id: 'images', label: 'IMAGES' },
-]
+const worldIds = Object.keys(worlds)
+
+const currentWorldFromRoute = computed(() => {
+  const segment = String(route.params.world || '')
+  return worldIds.includes(segment) ? segment : worldIds[0] || 'cosmic-broth'
+})
+
+const activeWorldId = ref(currentWorldFromRoute.value)
+
+const sections: ContentSection[] = ['records', 'portraits', 'images']
+
+const activeWorld = computed(() => worlds[activeWorldId.value] || null)
+
+const activeEntries = computed(() => {
+  const worldId = activeWorldId.value
+  const worldIntro = introductions[worldId]
+  if (!worldIntro) {
+    return [] as Array<{ section: ContentSection, id: string, label: string, target: string }>
+  }
+
+  return sections.flatMap((section) => {
+    const bucket = worldIntro[section] || {}
+    return Object.keys(bucket).map((id) => {
+      const target = section === 'records'
+        ? (() => {
+            const chapter = contentRouter[worldId]?.records[id]?.[0]
+            return chapter ? `/${worldId}/records/${id}/${chapter}` : `/${worldId}/records/${id}`
+          })()
+        : `/${worldId}/${section}/${id}`
+
+      return {
+        section,
+        id,
+        label: getContentLabel(section, id),
+        target,
+      }
+    })
+  })
+})
+
+const pathLabel = computed(() => getMenuPath(activeWorldId.value))
 
 watch(() => route.path, () => {
   isOpen.value = false
+  activeWorldId.value = currentWorldFromRoute.value
 })
+
+watch(isOpen, (open) => {
+  if (typeof document === 'undefined') return
+  document.documentElement.style.overflow = open ? 'hidden' : ''
+  if (open) activeWorldId.value = currentWorldFromRoute.value
+})
+
+onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.documentElement.style.overflow = ''
+  }
+})
+
+function toggleMenu() {
+  isOpen.value = !isOpen.value
+}
+
+function selectWorld(worldId: string) {
+  activeWorldId.value = worldId
+}
 </script>
 
 <template>
-  <header class="site-header" :class="{ 'site-header--home': route.path === '/' }">
+  <header class="site-header" :class="{ 'site-header--home': route.path === '/', 'is-menu-open': isOpen }">
     <NuxtLink class="brand" to="/" aria-label="返回首页">
-      <span class="brand-mark" aria-hidden="true"><i /></span>
-      <span>
-        <strong>GRAND-STARRS-RAY</strong>
-        <small>COSMIC BROTH ARCHIVE</small>
+      <img class="brand-logo" :src="assetUrl('/assets/logo_CVfnudUF.png')" alt="COSMIC BROTH" width="137" height="55">
+      <span class="brand-fallback" aria-hidden="true">
+        <span class="brand-mark"><i /></span>
+        <span>
+          <strong>GRAND-STARRS-RAY</strong>
+          <small>ACS&MMS</small>
+        </span>
       </span>
     </NuxtLink>
 
@@ -31,36 +97,87 @@ watch(() => route.path, () => {
       type="button"
       :aria-expanded="isOpen"
       aria-controls="site-navigation"
-      @click="isOpen = !isOpen"
+      @click="toggleMenu"
     >
-      {{ isOpen ? 'CLOSE' : 'MENU' }}
-      <span aria-hidden="true">{{ isOpen ? '×' : '≡' }}</span>
+      <svg class="menu-trigger__shape" viewBox="0 0 550 180" aria-hidden="true">
+        <polygon points="530.85,166.3 56.09,166.3 31.78,145.77 31.78,114.67 19.15,98.95 19.15,33.1 46.32,13.71 494.75,13.71 530.85,47.11" />
+      </svg>
+      <span class="menu-trigger__label">{{ isOpen ? 'CLOSE' : 'MENU' }}</span>
+      <span class="menu-trigger__icon" aria-hidden="true">
+        <i /><i /><i />
+      </span>
     </button>
 
-    <Transition name="menu">
-      <div v-if="isOpen" id="site-navigation" class="navigation-panel">
-        <div class="navigation-grid">
-          <section v-for="(world, worldId) in worlds" :key="worldId" class="navigation-world">
-            <div class="navigation-world__heading">
-              <img :src="assetUrl(world.star_image_url)" alt="">
+    <Transition name="menubox">
+      <div
+        v-if="isOpen"
+        id="site-navigation"
+        class="menubox"
+        role="dialog"
+        aria-modal="true"
+        aria-label="站点导航"
+      >
+        <div class="menubox__edge menubox__edge--left" aria-hidden="true">
+          <i /><i /><i />
+        </div>
+
+        <aside v-if="activeWorld" class="menubox__worldview">
+          <p class="menubox__eyebrow">■ [缩略浏览]::check()</p>
+          <div class="menubox__preview">
+            <header>
+              <span>[{{ activeWorld.name }}]</span>
+            </header>
+            <div class="menubox__preview-body">
+              <img :src="assetUrl(activeWorld.image_url)" :alt="activeWorld.name">
               <div>
-                <small>{{ worldId }}</small>
-                <h2>{{ world.name }}</h2>
+                <p>{{ activeWorld.introduce }}</p>
+                <NuxtLink
+                  class="menubox__explore"
+                  :to="getWorldCategoryTarget(activeWorldId, 'records') || '/'"
+                  @click="isOpen = false"
+                >
+                  EXPLORE
+                </NuxtLink>
               </div>
             </div>
-            <nav :aria-label="`${world.name}内容导航`">
-              <NuxtLink
-                v-for="section in sections"
-                :key="section.id"
-                :to="getWorldCategoryTarget(String(worldId), section.id) || '/'"
+          </div>
+          <pre class="menubox__code">[WORLD.OVERVIEW] INITIALIZING…
+01001110 10000011 10001100 11111111 10001101 01010011 01100111
+→ projection.scale: 1:2048
+→ view_port: READY</pre>
+        </aside>
+
+        <div class="menubox__selector">
+          <p class="menubox__path">{{ pathLabel }}</p>
+          <div class="menubox__columns">
+            <div class="menubox__worlds" role="listbox" aria-label="世界列表">
+              <button
+                v-for="(world, worldId) in worlds"
+                :key="worldId"
+                type="button"
+                class="menubox__world"
+                :class="{ active: activeWorldId === worldId }"
+                :style="{ '--world-color': world.color }"
+                @click="selectWorld(String(worldId))"
               >
-                <span>{{ section.label }}</span>
-                <b>{{ section.id === 'records'
-                  ? Object.keys(contentRouter[String(worldId)]?.records || {}).length
-                  : contentRouter[String(worldId)]?.[section.id].length || 0 }}</b>
-              </NuxtLink>
-            </nav>
-          </section>
+                <b>{{ world.name }}</b>
+                <i v-if="activeWorldId === worldId" class="menubox__arrow" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div class="menubox__entries" role="list">
+              <template v-for="entry in activeEntries" :key="`${entry.section}-${entry.id}`">
+                <p class="menubox__section-label">{{ entry.section }}</p>
+                <NuxtLink class="menubox__entry" :to="entry.target" @click="isOpen = false">
+                  {{ entry.label }}
+                </NuxtLink>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <div class="menubox__edge menubox__edge--right" aria-hidden="true">
+          <i /><i /><i />
         </div>
       </div>
     </Transition>

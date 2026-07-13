@@ -69,11 +69,17 @@ test('serves the Nuxt home page and public data snapshot', async () => {
   const homeHtml = await home.text()
   assert.match(homeHtml, /data-content-page="home"/)
   assert.match(homeHtml, /ray-home__viewport/)
+  assert.match(homeHtml, /ray-uibox/)
+  assert.match(homeHtml, /CONSLOE/)
+  assert.match(homeHtml, /ray-home__drag/)
 
   const router = await fetch(`${origin}/api/router.json`)
   assert.equal(router.status, 200)
   const data = await router.json()
   assert.deepEqual(Object.keys(data), ['cosmic-broth', 'checkerboard', 'fogbound-box', 'meta-room'])
+
+  const guide = await fetch(`${origin}/assets/hud/guide.png`)
+  assert.equal(guide.status, 200)
 })
 
 test('renders all reported deep entry routes', async () => {
@@ -105,5 +111,7 @@ test('renders all reported deep entry routes', async () => {
 test('returns the Nuxt error page for an unknown archive node', async () => {
   const response = await fetchHtml('/unknown/records/missing/c1')
   assert.equal(response.status, 404)
-  assert.match(await response.text(), /SIGNAL LOST/)
+  const html = await response.text()
+  assert.match(html, /SIGNAL LOST/)
+  assert.match(html, /ray-error|RETURN|返回/)
 })
