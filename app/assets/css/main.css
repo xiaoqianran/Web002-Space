@@ -68,8 +68,9 @@ img {
   overflow: clip;
 }
 
-/* Home is a fixed HUD stage; prevent page scroll under the star map. */
-.app-shell:has([data-content-page="home"]) {
+/* Fixed stages (home star map / images drag board) should not scroll the shell. */
+.app-shell:has([data-content-page="home"]),
+.app-shell:has([data-content-page="images"]) {
   height: 100svh;
   overflow: hidden;
 }
