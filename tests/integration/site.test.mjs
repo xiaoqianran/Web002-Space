@@ -66,7 +66,9 @@ after(() => {
 test('serves the Nuxt home page and public data snapshot', async () => {
   const home = await fetch(origin)
   assert.equal(home.status, 200)
-  assert.match(await home.text(), /data-content-page="home"/)
+  const homeHtml = await home.text()
+  assert.match(homeHtml, /data-content-page="home"/)
+  assert.match(homeHtml, /ray-home__viewport/)
 
   const router = await fetch(`${origin}/api/router.json`)
   assert.equal(router.status, 200)
@@ -76,26 +78,27 @@ test('serves the Nuxt home page and public data snapshot', async () => {
 
 test('renders all reported deep entry routes', async () => {
   const cases = [
-    ['/cosmic-broth/records', 'records'],
-    ['/cosmic-broth/portraits', 'portraits'],
-    ['/cosmic-broth/images', 'images'],
-    ['/checkerboard/records', 'records'],
-    ['/checkerboard/portraits', 'portraits'],
-    ['/checkerboard/images', 'images'],
-    ['/fogbound-box/records', 'records'],
-    ['/fogbound-box/portraits', 'portraits'],
-    ['/fogbound-box/images', 'images'],
-    ['/meta-room/records/goldfish', 'records'],
-    ['/meta-room/records/guovssahas', 'records'],
-    ['/meta-room/records/sickday', 'records'],
-    ['/meta-room/portraits/', 'portraits'],
-    ['/meta-room/images', 'images'],
+    ['/cosmic-broth/records', 'records', 'record-console'],
+    ['/cosmic-broth/portraits', 'portraits', 'portrait-canvas'],
+    ['/cosmic-broth/images', 'images', 'image-guide'],
+    ['/checkerboard/records', 'records', 'record-console'],
+    ['/checkerboard/portraits', 'portraits', 'portrait-canvas'],
+    ['/checkerboard/images', 'images', 'image-guide'],
+    ['/fogbound-box/records', 'records', 'record-console'],
+    ['/fogbound-box/portraits', 'portraits', 'portrait-canvas'],
+    ['/fogbound-box/images', 'images', 'image-guide'],
+    ['/meta-room/records/goldfish', 'records', 'record-console'],
+    ['/meta-room/records/guovssahas', 'records', 'record-console'],
+    ['/meta-room/records/sickday', 'records', 'record-console'],
+    ['/meta-room/portraits/', 'portraits', 'portrait-canvas'],
+    ['/meta-room/images', 'images', 'image-guide'],
   ]
 
-  for (const [path, pageType] of cases) {
+  for (const [path, pageType, visualMarker] of cases) {
     const { response, html } = await followHtmlRefresh(path)
     assert.equal(response.status, 200, path)
     assert.match(html, new RegExp(`data-content-page="${pageType}"`), path)
+    assert.match(html, new RegExp(visualMarker), path)
   }
 })
 

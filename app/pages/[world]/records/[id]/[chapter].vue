@@ -18,55 +18,40 @@ const chapterNumber = Number.parseInt(chapterId.replace(/^c/, ''), 10)
 const chapterTitle = record.chapters[chapterNumber - 1] || `章节 ${chapterNumber}`
 const assetUrl = useAssetUrl()
 
-useSeoMeta({
-  title: `${chapterTitle} · ${record.name}`,
-  description: record.instrution,
-  ogImage: assetUrl(record.image_url),
-})
+useSeoMeta({ title: `${chapterTitle} - ${record.name}`, description: record.instrution, ogImage: assetUrl(record.image_url) })
 </script>
 
 <template>
-  <main class="content-page" data-content-page="records" :style="{ '--world-color': world.color }">
-    <WorldHeader
-      :world="world"
-      eyebrow="RECORDS / MEMORY FRAGMENT"
-      :title="record.name"
-      :description="record.instrution"
-    />
-
-    <div class="reader-layout">
-      <aside class="record-sidebar">
+  <main class="original-page original-record" data-content-page="records" :style="{ '--world-color': world.color }">
+    <section class="record-console">
+      <header><span>≫ TITLE:</span> {{ record.name }}<i /></header>
+      <div class="record-console__grid">
         <img :src="assetUrl(record.image_url)" :alt="record.name">
-        <dl>
-          <div><dt>TYPE</dt><dd>{{ record.type }}</dd></div>
-          <div><dt>DATE</dt><dd>{{ record.time }}</dd></div>
-          <div><dt>CHAPTERS</dt><dd>{{ registeredChapters.length }}</dd></div>
-        </dl>
+        <div class="record-console__brief">
+          <p>{{ record.instrution }}</p>
+          <dl>
+            <div><dt>≫ WORLD ---------------</dt><dd>{{ world.name }}</dd></div>
+            <div><dt>≫ TYPE ----------------</dt><dd>{{ record.type }}</dd></div>
+            <div><dt>≫ TIME ----------------</dt><dd>{{ record.time }}</dd></div>
+          </dl>
+        </div>
         <nav aria-label="章节导航">
-          <NuxtLink
-            v-for="(chapter, index) in registeredChapters"
-            :key="chapter"
-            :to="`/${worldId}/records/${recordId}/${chapter}`"
-            :class="{ active: chapter === chapterId }"
-          >
-            <span>{{ String(index + 1).padStart(2, '0') }}</span>
-            {{ record.chapters[index] || `章节 ${index + 1}` }}
+          <NuxtLink v-for="(chapter, index) in registeredChapters" :key="chapter" :to="`/${worldId}/records/${recordId}/${chapter}`" :class="{ active: chapter === chapterId }">
+            {{ record.chapters[index] || `章节 ${index + 1}` }} <i />
           </NuxtLink>
         </nav>
-      </aside>
+      </div>
+    </section>
 
-      <article class="record-reader">
-        <header>
-          <p>[DECODE] memory.fragment[{{ chapterId }}]</p>
-          <h2>{{ chapterTitle }}</h2>
-          <span>STATUS: ACTIVE / OUTPUT: TIMELINE APPEND</span>
-        </header>
-        <div class="record-reader__body">
-          <p v-for="(paragraph, index) in paragraphs" :key="index">{{ paragraph }}</p>
-        </div>
-      </article>
-    </div>
+    <section class="record-decode">
+      <p>[NODE.LINK] INITIATING...</p><p>[DECODE] memory.fragment[{{ chapterId }}]</p>
+      <p>01100101 01101111 01001110 01011000 10001011 01010110</p>
+      <p>→ STATUS: ACTIVE<br>→ OUTPUT: [timeline append]<br>→ PREFETCH: enabled</p>
+    </section>
 
-    <ArchiveFooter />
+    <article class="record-manuscript">
+      <header><span>— →</span><b>{{ chapterNumber }}</b><h1>{{ chapterTitle }}</h1></header>
+      <div><p v-for="(paragraph, index) in paragraphs" :key="index">{{ paragraph }}</p></div>
+    </article>
   </main>
 </template>

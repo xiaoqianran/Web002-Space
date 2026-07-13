@@ -4,62 +4,69 @@ import { getWorldCards, worlds } from '~/utils/content'
 const assetUrl = useAssetUrl()
 
 useSeoMeta({
-  title: '宇宙汤资料库',
-  description: '探索宇宙汤、地平世界、迷雾中古与棋盘室的记录、人物和图像。',
+  title: 'COSMIC BROTH',
+  description: 'GRAND-STARRS-RAY 舰载世界观资料库。',
 })
 </script>
 
 <template>
-  <main data-content-page="home">
-    <section class="hero">
-      <div class="hero__grid" aria-hidden="true" />
-      <div class="hero__content">
-        <p class="eyebrow">[RAY.SOM] MULTIVERSE ARCHIVE / ONLINE</p>
-        <h1>
-          <span>COSMIC</span>
-          <span>BROTH</span>
-        </h1>
-        <p class="hero__lead">宇宙并不遵循正确的逻辑。这里记录偏航的故事、被观察的人，以及没有上下文的图像碎片。</p>
-        <a class="hero__scroll" href="#worlds">SCROLL TO ACCESS <span>↓</span></a>
+  <main class="ray-home" data-content-page="home">
+    <section class="ray-home__viewport">
+      <img class="ray-home__background" :src="assetUrl('/assets/background_436870b549.jpg')" alt="宇宙航行背景">
+      <div class="ray-home__scanlines" aria-hidden="true" />
+      <div class="ray-home__orbit ray-home__orbit--left"><span>[ The Torch's Flicker ]</span></div>
+      <div class="ray-home__orbit ray-home__orbit--right" />
+
+      <div class="ray-home__drag ray-home__drag--left">DRAG <b>▶ ▶</b></div>
+      <div class="ray-home__drag ray-home__drag--right">DRAG <b>◀ ◀</b></div>
+
+      <div class="ray-home__status">
+        <div class="ray-home__brain" aria-hidden="true"><i /></div>
+        <dl>
+          <div><dt>EN</dt><dd><i style="width: 72%" /></dd></div>
+          <div><dt>HI</dt><dd><i style="width: 51%" /></dd></div>
+          <div><dt>PSI</dt><dd><i style="width: 28%" /></dd></div>
+          <div><dt>CQL</dt><dd><i style="width: 63%" /></dd></div>
+        </dl>
       </div>
-      <div class="hero__telemetry" aria-label="系统状态">
-        <span>WORLDS <b>04</b></span>
-        <span>ARCHIVE <b>ONLINE</b></span>
-        <span>SIGNAL <b>98.7%</b></span>
+
+      <div class="ray-home__clock">
+        <p>◷ <em>宇宙汤:</em> 2041/07/13</p>
+        <strong>21:01:54</strong>
       </div>
+
+      <a class="ray-home__console" href="#worlds">
+        <span>CONSLOE</span>
+        <i /><b /><i />
+      </a>
+
+      <div class="ray-home__external">External Links&nbsp; ↘</div>
+      <div class="ray-home__social"><span>▣</span><span>◉</span><span>▣</span></div>
+      <a class="ray-home__help" href="#worlds">
+        <span class="ray-home__help-icon">◉</span>
+        <span><strong>Need Help?</strong><small>Check Instruction</small></span>
+      </a>
+      <div class="ray-home__corner ray-home__corner--left" aria-hidden="true" />
+      <div class="ray-home__corner ray-home__corner--right" aria-hidden="true" />
     </section>
 
-    <section id="worlds" class="world-index">
+    <section id="worlds" class="ray-worlds">
+      <header><small>EXPLORE / WORLD NODES</small><h1>ACCESS ARCHIVE</h1></header>
       <article
         v-for="(world, worldId, index) in worlds"
         :key="worldId"
-        class="world-panel"
+        class="ray-world"
         :style="{ '--world-color': world.color }"
       >
-        <div class="world-panel__number">0{{ index + 1 }}</div>
-        <div class="world-panel__summary">
-          <img class="world-panel__star" :src="assetUrl(world.star_image_url)" alt="">
-          <p class="eyebrow">WORLD NODE / {{ worldId }}</p>
-          <h2>{{ world.name }}</h2>
-          <p>{{ world.introduce }}</p>
-        </div>
-        <div class="world-panel__cards">
-          <NuxtLink
-            v-for="card in getWorldCards(String(worldId))"
-            :key="`${card.section}-${card.id}`"
-            class="archive-card"
-            :to="card.target"
-          >
-            <img :src="assetUrl(card.image_url)" :alt="card.id">
-            <span class="archive-card__type">{{ card.section }}</span>
-            <strong>{{ card.id }}</strong>
-            <p>{{ card.introduce }}</p>
-            <i>OPEN NODE ↗</i>
+        <div class="ray-world__index">0{{ index + 1 }}</div>
+        <img :src="assetUrl(world.star_image_url)" alt="">
+        <div class="ray-world__copy"><small>{{ worldId }}</small><h2>{{ world.name }}</h2><p>{{ world.introduce }}</p></div>
+        <nav>
+          <NuxtLink v-for="card in getWorldCards(String(worldId))" :key="`${card.section}-${card.id}`" :to="card.target">
+            <span>{{ card.section }}</span><strong>{{ card.id }}</strong><b>ACCESS →</b>
           </NuxtLink>
-        </div>
+        </nav>
       </article>
     </section>
-
-    <ArchiveFooter />
   </main>
 </template>
