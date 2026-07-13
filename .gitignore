@@ -1,6 +1,12 @@
 # Dependencies
 node_modules/
 .pages/
+.nuxt/
+.output/
+dist/
+.data/
+.eslintcache
+coverage/
 
 # Logs and local runtime
 *.log

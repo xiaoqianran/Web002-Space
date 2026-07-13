@@ -1,11 +1,35 @@
 {
   "name": "cosmic-broth-replica",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "npm@11.18.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "build:pages": "node scripts/build-pages.mjs",
-    "start": "node server.mjs",
-    "check": "node --check server.mjs"
+    "build": "nuxt build",
+    "check": "npm run lint && npm run typecheck && npm run test:unit",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "lint": "eslint . --max-warnings=0",
+    "postinstall": "nuxt prepare",
+    "preview": "nuxt preview",
+    "start": "node .output/server/index.mjs",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:integration": "npm run build && node --test tests/integration/site.test.mjs",
+    "test:unit": "vitest run --config vitest.config.ts",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "nuxt": "4.4.8"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "1.16.0",
+    "@types/node": "^24.0.0",
+    "eslint": "^10.7.0",
+    "typescript": "^5.9.0",
+    "vitest": "4.1.10",
+    "vue-tsc": "^3.3.7"
   }
 }
