@@ -369,7 +369,9 @@ onBeforeUnmount(() => {
 
         <div class="ray-home__pagebox" aria-label="分区与作品选择">
           <div class="ray-home__compass">
+            <div class="ray-home__compass-wave" aria-hidden="true" />
             <div class="ray-home__compass-ring" aria-hidden="true" />
+            <div class="ray-home__compass-ring ray-home__compass-ring--mid" aria-hidden="true" />
             <div class="ray-home__compass-ring ray-home__compass-ring--inner" aria-hidden="true" />
             <div class="ray-home__compass-nodes">
               <button

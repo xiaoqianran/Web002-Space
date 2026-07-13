@@ -12,9 +12,11 @@ if (!world || !images || !introduction || !contentRouter[worldId]?.images.includ
 }
 
 const assetUrl = useAssetUrl()
-const offset = reactive({ x: 0, y: 0 })
+const showGuide = ref(true)
+const offset = reactive({ x: -80, y: 40 })
 const drag = reactive({
   active: false,
+  moved: false,
   startX: 0,
   startY: 0,
   originX: 0,
@@ -26,11 +28,16 @@ const boardStyle = computed(() => ({
   transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
 }))
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value))
+}
+
 function onPointerDown(event: PointerEvent) {
   if (event.button !== 0) return
   const target = event.target as HTMLElement | null
   if (target?.closest('a, button')) return
   drag.active = true
+  drag.moved = false
   drag.startX = event.clientX
   drag.startY = event.clientY
   drag.originX = offset.x
@@ -41,8 +48,16 @@ function onPointerDown(event: PointerEvent) {
 
 function onPointerMove(event: PointerEvent) {
   if (!drag.active || event.pointerId !== drag.pointerId) return
-  offset.x = drag.originX + (event.clientX - drag.startX)
-  offset.y = drag.originY + (event.clientY - drag.startY)
+  const dx = event.clientX - drag.startX
+  const dy = event.clientY - drag.startY
+  if (Math.hypot(dx, dy) > 6) {
+    drag.moved = true
+    if (showGuide.value) showGuide.value = false
+  }
+  const limitX = typeof window === 'undefined' ? 900 : Math.max(480, window.innerWidth * 0.75)
+  const limitY = typeof window === 'undefined' ? 700 : Math.max(360, window.innerHeight * 0.7)
+  offset.x = clamp(drag.originX + dx, -limitX, limitX)
+  offset.y = clamp(drag.originY + dy, -limitY, limitY)
 }
 
 function onPointerUp(event: PointerEvent) {
@@ -86,18 +101,20 @@ useSeoMeta({
       </figure>
     </section>
 
-    <div class="image-guide" aria-hidden="true">
-      <div class="image-guide__mark">
-        <span /><span /><span /><span />
-        <i>▣</i>
+    <Transition name="guide">
+      <div v-if="showGuide" class="image-guide" aria-hidden="true">
+        <div class="image-guide__mark">
+          <span /><span /><span /><span />
+          <i>▣</i>
+        </div>
+        <strong>DRAG SCREEN</strong>
+        <span>TO BROWSE IMAGES</span>
+        <footer>
+          <em>↪ Infinite scrolling / Ready</em>
+          <b>▥▥▥▥▥</b>
+        </footer>
       </div>
-      <strong>DRAG SCREEN</strong>
-      <span>TO BROWSE IMAGES</span>
-      <footer>
-        <em>↪ Infinite scrolling / Ready</em>
-        <b>▥▥▥▥▥</b>
-      </footer>
-    </div>
+    </Transition>
 
     <div class="vertical-scroll" aria-hidden="true">SCROLL <b>////</b></div>
   </main>
